@@ -1,5 +1,16 @@
-# insurance-pricing-model-xgboost
-Скоринг-модель, позволяющая оценить индивидуальный риск каждого водителя (вероятность ДТП) и на его основе рассчитать справедливую стоимость полиса.
+# Insurance Risk Pricing
+Система страхового ценообразования на основе машинного обучения для прогнозирования частоты и размера убытков и расчёта тарифа с целевым Loss Ratio.
+
+## Competition Result
+
+🥈 2nd Place — KBTU Risk Management Case Competition 2026
+
+Built a complete insurance pricing pipeline that:
+
+- predicted claim frequency and severity;
+- recalibrated premiums;
+- reduced portfolio Loss Ratio from 121.6% to 70%;
+- passed stability and calibration tests.
 
 _**Язык программирования Python!**_
 
@@ -13,66 +24,74 @@ The model estimates:
 
 The solution includes data cleaning, feature engineering, model training, calibration, and business-level pricing optimization.
 
+## Business Problem
+
+The initial insurance portfolio had a Loss Ratio of 121.6%, indicating that claim payments exceeded collected premiums.
+
+The objective was to build a risk-based pricing system capable of reducing portfolio Loss Ratio to the target level of 70% while preserving risk differentiation across policyholders.
+
 ## Data Availability
 The dataset is not publicly available due to confidentiality reasons.
 
 ## Disclaimer
 
 This project was developed as part of a Company's case competition.
-##  Pipeline Overview
+## Pipeline
 
 ### 1. Data Cleaning
-- Handling invalid values (experience, car year, bonus-malus)
-- Missing value imputation
+
+- bonus-malus normalization
+- vehicle year correction
+- experience reconstruction
+- outlier treatment
+- missing value imputation
+
 
 ### 2. Feature Engineering
-- Time-based features (year, month, quarter)
-- Risk indicators (bonus-malus transformations)
-- Driver experience groups
-- Interaction features
 
-### 3. Aggregations
-- Driver-level statistics (claim rate, policy count)
-- Policy-level features
+- risk indicators
+- interaction features
+- experience groups
+- policy-level aggregations
+- SCORE compression
 
-### 4. SCORE Feature Compression
-- Aggregated into grouped averages
-- Reduced dimensionality
+### 3. Feature Selection
 
-### 5. Feature Selection
-- IV (Information Value)
-- VIF (multicollinearity check)
-- XGBoost feature importance (95% threshold)
+- Information Value (IV)
+- Variance Inflation Factor (VIF)
+- Tree-based importance
 
-### 6. Modeling
-- Frequency model (XGBoost classifier)
-- Severity model (XGBoost regressor)
+### 4. Modeling
 
-### 7. Calibration
-- Probability calibration to match real claim rate
-- Severity bias correction
+#### Claim Frequency
 
-### 8. Pricing Optimization
-- Expected loss calculation
-- Premium adjustment to achieve target loss ratio (70%)
+- XGBoost Classifier
+- LightGBM Classifier
 
-### 9. Evaluation
-- ROC-AUC
-- Gini coefficient
-- Residual analysis
-- Stability tests
+#### Claim Severity
 
-## Model Performance Results
+- XGBoost Regressor
+- LightGBM Regressor
 
-### Frequency Model (Claim Probability)
+### 5. Calibration
 
-- CV AUC (validation): **0.8212**
-- Gini coefficient: **0.6424**
-- Train AUC: **0.8915**
+- probability calibration
+- severity bias correction
+- holdout scaling
 
-### Severity Model (Claim Amount)
+### 6. Pricing
 
-- R² (log-scale): **0.7595**
-- Log-bias correction: **0.0038**
-- Average predicted severity:
-  - Train: **462,272 KZT**
+- expected loss estimation
+- premium recalculation
+- target Loss Ratio optimization
+
+## Model Performance
+
+| Metric | XGBoost | LightGBM |
+|----------|----------|----------|
+| CV AUC | 0.821 | 0.820 |
+| Gini | 0.642 | 0.640 |
+| Train-Val GAP | 0.0479 | 0.0581 |
+| Noise Correlation | 0.9806 | 0.9928 |
+| Holdout LR Before Calibration | 65.71% | 88.31% |
+| Holdout LR After Calibration | 70.00% | 70.02% |
